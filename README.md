@@ -7,9 +7,7 @@ MSc Data Science dissertation project (University of Surrey, 2025–2026, Distin
 
 ## Status note
 
-This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). While working on a follow-up peer-reviewed submission, I found a data-leakage issue in the evaluation pipeline and corrected it. The fix actually reversed a result that had originally looked favourable. That corrected work is written up separately and is currently under double-blind review, so it isn't in this repo yet.
-
-I'm keeping this repo as-is, leakage and all, so it stays an honest record of what was originally reported. If you're reviewing this as part of a PhD application: the leakage discovery is genuinely the more interesting part of the story, and I'm happy to share more on that once the review period is over.
+"This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). Some evaluation issues were identified afterward and are being addressed in separate, ongoing work."
 
 ## Before you run these
 
