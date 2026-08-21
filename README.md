@@ -1,47 +1,40 @@
 # LLM-Based Summarisation and Clause Classification for Legal Contracts
 
-MSc Data Science dissertation project (University of Surrey, 2024–2026, Distinction) combining hybrid summarisation and multi-label clause classification on the [CUAD](https://www.atticusprojectai.org/cuad) (Contract Understanding Atticus Dataset) legal contract corpus.
+MSc Data Science dissertation project (University of Surrey, 2025–2026, Distinction). Combines hybrid summarisation and multi-label clause classification on CUAD, the Contract Understanding Atticus Dataset.
 
 **Author:** Raja Meenakshi Shanmuga Sundaram
 **Supervisor:** Dr Alaa Marshan, University of Surrey
 
-## ⚠️ Status note
+## Status note
 
-This repo contains the code and results as reported in the original MSc dissertation (Aug/Sep 2025). During follow-on research for a peer-reviewed submission, a **data-leakage issue in the evaluation pipeline** was independently identified and corrected — the correction reversed a previously favourable result. That corrected work is written up separately and is currently under double-blind review, so it is **not included in this repo** while review is ongoing.
+This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). While working on a follow-up peer-reviewed submission, I found a data-leakage issue in the evaluation pipeline and corrected it. The fix actually reversed a result that had originally looked favourable. That corrected work is written up separately and is currently under double-blind review, so it isn't in this repo yet.
 
-This repo is kept as-is (dissertation-stage) for transparency and reproducibility of what was originally reported. If you're looking at this as part of a PhD application review: the leakage discovery and correction is the more interesting research contribution, and I can point you to it once the review period allows public disclosure.
+I'm keeping this repo as-is, leakage and all, so it stays an honest record of what was originally reported. If you're reviewing this as part of a PhD application: the leakage discovery is genuinely the more interesting part of the story, and I'm happy to share more on that once the review period is over.
 
 ## Repository structure
 
-```
-.
-├── notebooks/
-│   ├── Clause_Classification_Legal_Pro_Bert_Final.ipynb        # Stage 2: clause classification
-│   ├── Hybrid_Summarisation_Pipeline_1908.ipynb                # Stage 1: hybrid summarisation
-│   └── Hybrid_Summarisation_Clause_Classification.ipynb        # Integration: joins Stage 1 + Stage 2, full evaluation
-├── alternatives_explored/
-│   ├── LegalLongformer2208.ipynb                                # Legal-Longformer classifier (considered, not adopted)
-│   └── extractive_summarisation_pipeline.ipynb                  # Supervised Longformer extractive ranker (considered, not adopted)
-├── requirements.txt
-└── README.md
-```
+notebooks/
+alternatives_explored/
+pipeline_out/
+requirements.txt
+README.md
 
-### Why three notebooks, not one
+### Why three notebooks
 
-The dissertation pipeline (Figure 3.1-1) has two stages that were developed and evaluated independently, then joined:
+The pipeline (Figure 3.1-1 in the dissertation) has two stages that were built and evaluated separately, then joined together:
 
-1. **`Hybrid_Summarisation_Pipeline_1908.ipynb`** — Stage 1. Combines extractive (TextRank) and abstractive (Legal-Pegasus) summarisation into several hybrid variants (`hybrid_blend`, `hybrid_mmr_dyn`, `hybrid_aug`, `hybrid_strong`), evaluated with SBERT-based precision/recall/F1 (Table 5.1-1).
-2. **`Clause_Classification_Legal_Pro_Bert_Final.ipynb`** — Stage 2. Trains and compares Legal-BERT and LegalPro-BERT under different loss functions and optimisers (Table 5.2-1), then tunes per-class thresholds (Table 5.2-2). Saves the best checkpoint (`legalpro_bert_clause_cls_best.pt`) and label map (`clause_to_idx.json`) used by the integration stage.
-3. **`Hybrid_Summarisation_Clause_Classification.ipynb`** — Integration. Loads the Stage 2 checkpoint, classifies the Stage 1 hybrid summaries (with overlapping-chunk handling for long contracts), and computes the full downstream evaluation: Clause Coverage Score (CCS), Recall of Critical Clauses (RCR_critical), ROUGE, and BERTScore (Tables 5.3-2 through 5.3-4).
+1. **`Hybrid_Summarisation_Pipeline_1908.ipynb`** – Stage 1. Combines extractive (TextRank) and abstractive (Legal-Pegasus) summarisation into a few hybrid variants (`hybrid_blend`, `hybrid_mmr_dyn`, `hybrid_aug`, `hybrid_strong`), evaluated with SBERT-based precision/recall/F1 (Table 5.1-1).
+2. **`Clause_Classification_Legal_Pro_Bert_Final.ipynb`** – Stage 2. Trains and compares Legal-BERT and LegalPro-BERT under different loss functions and optimisers (Table 5.2-1), then tunes per-class thresholds (Table 5.2-2). Saves the best checkpoint (`legalpro_bert_clause_cls_best.pt`) and label map (`clause_to_idx.json`) that the integration stage needs.
+3. **`Hybrid_Summarisation_Clause_Classification.ipynb`** – Integration. Loads the Stage 2 checkpoint, classifies the Stage 1 summaries (with chunk handling for long contracts), and runs the full downstream evaluation: Clause Coverage Score (CCS), Recall of Critical Clauses (RCR_critical), ROUGE, and BERTScore (Tables 5.3-2 through 5.3-4).
 
 ### Alternatives explored, not adopted
 
-Two model variants were trained and evaluated but explicitly not adopted in the final pipeline, as discussed in dissertation §3.2:
+Two things I tried and didn't end up using, as discussed in 3.2 of the dissertation:
 
-- **Legal-Longformer** (`alternatives_explored/LegalLongformer2208.ipynb`) was considered as a clause classifier for its longer context window (4,096 tokens) but not adopted, since CUAD clause spans typically fit within 512 tokens and the computational cost of long-sequence training was not justified.
-- A **supervised Longformer-based extractive ranker** (`alternatives_explored/extractive_summarisation_pipeline.ipynb`) was trialled as an alternative to TextRank for the extractive stage, but TextRank was retained in the final pipeline as it required no training data and performed comparably for this dataset size.
+- **Legal-Longformer** (`alternatives_explored/LegalLongformer2208.ipynb`) as a clause classifier, for its longer context window (4,096 tokens). I didn't adopt it because CUAD clause spans mostly fit under 512 tokens anyway, and the extra training cost wasn't worth it for this dataset.
+- A **supervised Longformer extractive ranker** (`alternatives_explored/extractive_summarisation_pipeline.ipynb`), tried as an alternative to TextRank. TextRank stayed in the final pipeline since it needs no training data and did just as well at this dataset size.
 
-These are included for transparency, not as part of the reported results.
+Keeping these in for transparency, not because they're part of the reported results.
 
 ## Key results
 
@@ -57,18 +50,20 @@ These are included for transparency, not as part of the reported results.
 | LegalBERT | BCEWithLogitsLoss | AdamW | 0.5474 |
 | LegalBERT | BCEWithLogitsLoss | Adagrad | 0.5075 |
 
-LegalPro-BERT + BCEWithLogitsLoss + AdamW was adopted as the default model for the integration pipeline.
+LegalPro-BERT + BCEWithLogitsLoss + AdamW ended up as the default model for the integration pipeline.
 
-**Integration pipeline (Table 5.3-2):** all summarisation variants preserved 100% of critical clauses (CSS = 1.0, RCR_critical = 1.0). Hybrid Blend achieved the best practical trade-off, compressing contracts to ~12% of their original length while retaining full clause coverage.
+**Integration pipeline (Table 5.3-2):** every summarisation variant kept 100% of critical clauses (CSS = 1.0, RCR_critical = 1.0). Hybrid Blend gave the best practical trade-off, compressing contracts to around 12% of their original length while still holding onto full clause coverage.
 
-*Note: the 0.72 micro-F1 above is a validation-set figure from this dissertation-stage pipeline. It should not be confused with the leakage-corrected full-text micro-F1 reported separately — see the status note above.*
+Raw summary CSVs behind these tables are in [`pipeline_out/`](./pipeline_out/).
+
+*Note: the 0.72 micro-F1 above is a validation-set figure from this dissertation-stage pipeline. Don't confuse it with the leakage-corrected full-text micro-F1 reported separately, see the status note above.*
 
 ## Data
 
-This repo does **not** include `CUAD_v1.json`. Download it from the official source:
-[https://www.atticusprojectai.org/cuad](https://www.atticusprojectai.org/cuad)
+`CUAD_v1.json` isn't included here. Grab it from the official source:
+https://www.atticusprojectai.org/cuad/
 
-Place it in the working directory (or update the path in each notebook) before running. Each notebook expects `CUAD_v1.json` in its own runtime working directory — see the load cell near the top of each notebook.
+Drop it in the working directory (or update the path in each notebook) before running. Every notebook expects `CUAD_v1.json` in its own runtime working directory, check the load cell near the top of each one.
 
 ## Setup
 
@@ -77,16 +72,17 @@ pip install -r requirements.txt
 python -m nltk.downloader punkt
 ```
 
-Notebooks were developed and run on Google Colab Pro (single NVIDIA T4 GPU, High-RAM mode). GPU is recommended for both training and inference cells.
+
+I built and ran these on Google Colab Pro with a single NVIDIA T4 GPU in High-RAM mode. A GPU is recommended for both training and inference.
 
 ## Reproducibility
 
 - Random seed fixed to 42 for data splits and sampling throughout.
-- Trained artefacts (`legalpro_bert_clause_cls_best.pt`, `clause_to_idx.json`) are produced by `Clause_Classification_Legal_Pro_Bert_Final.ipynb` and consumed by `Hybrid_Summarisation_Clause_Classification.ipynb` — run notebooks in the order listed above.
-- Full methodology, hyperparameters, and evaluation protocol are documented in the accompanying dissertation report (not included in this repo; available on request).
+- The trained artefacts (`legalpro_bert_clause_cls_best.pt`, `clause_to_idx.json`) come out of `Clause_Classification_Legal_Pro_Bert_Final.ipynb` and feed into `Hybrid_Summarisation_Clause_Classification.ipynb`, so run the notebooks in the order listed above.
+- Full methodology, hyperparameters, and evaluation protocol live in the dissertation report itself (not included here, available on request).
 
 ## Citation
 
-If referencing this work, please cite the dissertation:
+If you're referencing this work, please cite the dissertation:
 
 > Shanmuga Sundaram, R.M. (2025). *LLM-based Summarisation and Clause Classification*. MSc Dissertation, University of Surrey. Supervised by Dr Alaa Marshan.
