@@ -7,7 +7,7 @@ MSc Data Science dissertation project (University of Surrey, 2025–2026, Distin
 
 ## Status note
 
-"This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). Some evaluation issues were identified afterward and are being addressed in separate, ongoing work."
+This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). Some evaluation issues were identified afterward and are being addressed in separate, ongoing work.
 
 ## Before you run these
 
@@ -20,11 +20,11 @@ A few things worth knowing if you're planning to actually execute the notebooks,
   
 ## Repository structure
 
-notebooks/
-alternatives_explored/
-pipeline_out/
-requirements.txt
-README.md
+- `notebooks/`
+- `alternatives_explored/`
+- `pipeline_out/`
+- `requirements.txt`
+- `README.md`
 
 ### Why three notebooks
 
@@ -63,7 +63,7 @@ LegalPro-BERT + BCEWithLogitsLoss + AdamW ended up as the default model for the 
 
 Raw summary CSVs behind these tables are in [`pipeline_out/`](./pipeline_out/).
 
-*Note: the 0.72 micro-F1 above is a validation-set figure from this dissertation-stage pipeline. Don't confuse it with the leakage-corrected full-text micro-F1 reported separately, see the status note above.*
+*Note: the 0.72 micro-F1 above is a validation-set figure from this dissertation-stage pipeline and may differ from figures reported in later work.*
 
 ## Data
 
