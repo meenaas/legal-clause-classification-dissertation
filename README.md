@@ -11,6 +11,15 @@ This is the code and results as they stood in the original MSc dissertation (Aug
 
 I'm keeping this repo as-is, leakage and all, so it stays an honest record of what was originally reported. If you're reviewing this as part of a PhD application: the leakage discovery is genuinely the more interesting part of the story, and I'm happy to share more on that once the review period is over.
 
+## Before you run these
+
+A few things worth knowing if you're planning to actually execute the notebooks, not just read them:
+
+- **`Hybrid_Summarisation_Pipeline_1908.ipynb` pins `transformers==4.43.3`**, while the other two notebooks pin `4.42.4`. I ran these in separate Colab sessions and never reconciled the versions afterward. `requirements.txt` uses `4.42.4`, matching the classification and integration notebooks, so expect a version mismatch if you're running the summarisation notebook on its own.
+- **`Clause_Classification_Legal_Pro_Bert_Final.ipynb` has a cell partway through that runs an unpinned `pip install -U transformers datasets accelerate`.** This upgrades packages mid-notebook, past whatever was pinned earlier in the same file. If you're rerunning it end to end, consider skipping or pinning that cell.
+- **`Hybrid_Summarisation_Clause_Classification.ipynb` hardcodes a Google Drive path**: `BASE = "/content/drive/MyDrive/msc_dissertation"`. Update this to wherever you've placed `summaries_hybrid.csv`, `clause_to_idx.json`, and `legalpro_bert_clause_cls_best.pt` before running it, it won't find these files at that path on your own Drive.
+
+  
 ## Repository structure
 
 notebooks/
