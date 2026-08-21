@@ -1,0 +1,30 @@
+# Core ML / transformers stack
+torch
+transformers==4.42.4
+datasets==2.20.0
+accelerate==0.33.0
+evaluate==0.4.2
+scikit-learn==1.5.1
+numpy==1.26.4
+
+# Data handling
+pandas
+
+# Summarisation
+sumy
+sentencepiece
+sentence-transformers
+
+# NLP utilities
+nltk
+
+# Evaluation metrics
+rouge-score==0.1.2
+bert-score==0.3.13
+sacrebleu
+
+# Visualisation
+matplotlib
+
+# Progress bars
+tqdm
