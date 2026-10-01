@@ -1,4 +1,4 @@
-# LLM-Based Summarisation and Clause Classification for Legal Contracts
+# LLM-Based Legal Document Summarisation and Multi-Label Classification
 
 MSc Data Science dissertation project (University of Surrey, 2025–2026, Distinction). Combines hybrid summarisation and multi-label clause classification on CUAD, the Contract Understanding Atticus Dataset.
 
@@ -6,9 +6,7 @@ MSc Data Science dissertation project (University of Surrey, 2025–2026, Distin
 **Supervisor:** Dr Alaa Marshan, University of Surrey
 
 ## Status note
-
-This is the code and results as they stood in the original MSc dissertation (Aug/Sep 2025). Some evaluation issues were identified afterward and are being addressed in separate, ongoing work.
-
+This repository contains the code and results as they stood in the original MSc dissertation (August–September 2025). The evaluation was later found to be affected by label leakage, so **the results below should not be treated as final**. A corrected analysis is currently under review.
 ## Before you run these
 
 A few things worth knowing if you're planning to actually execute the notebooks, not just read them:
@@ -32,7 +30,7 @@ The pipeline (Figure 3.1-1 in the dissertation) has two stages that were built a
 
 1. **`Hybrid_Summarisation_Pipeline_1908.ipynb`** – Stage 1. Combines extractive (TextRank) and abstractive (Legal-Pegasus) summarisation into a few hybrid variants (`hybrid_blend`, `hybrid_mmr_dyn`, `hybrid_aug`, `hybrid_strong`), evaluated with SBERT-based precision/recall/F1 (Table 5.1-1).
 2. **`Clause_Classification_Legal_Pro_Bert_Final.ipynb`** – Stage 2. Trains and compares Legal-BERT and LegalPro-BERT under different loss functions and optimisers (Table 5.2-1), then tunes per-class thresholds (Table 5.2-2). Saves the best checkpoint (`legalpro_bert_clause_cls_best.pt`) and label map (`clause_to_idx.json`) that the integration stage needs.
-3. **`Hybrid_Summarisation_Clause_Classification.ipynb`** – Integration. Loads the Stage 2 checkpoint, classifies the Stage 1 summaries (with chunk handling for long contracts), and runs the full downstream evaluation: Clause Coverage Score (CCS), Recall of Critical Clauses (RCR_critical), ROUGE, and BERTScore (Tables 5.3-2 through 5.3-4).
+3. **`Hybrid_Summarisation_Clause_Classification.ipynb`** – Integration. Loads the Stage 2 checkpoint, classifies the Stage 1 summaries (with chunk handling for long contracts), and runs the full downstream evaluation: Clause Coverage Score (CSS), Recall of Critical Clauses (RCR_critical), ROUGE, and BERTScore (Tables 5.3-2 through 5.3-4).
 
 ### Alternatives explored, not adopted
 
@@ -43,7 +41,7 @@ Two things I tried and didn't end up using, as discussed in 3.2 of the dissertat
 
 Keeping these in for transparency, not because they're part of the reported results.
 
-## Key results
+## Dissertation-stage results (superseded)
 
 **Clause classification (validation set, Table 5.2-1):**
 
@@ -59,7 +57,7 @@ Keeping these in for transparency, not because they're part of the reported resu
 
 LegalPro-BERT + BCEWithLogitsLoss + AdamW ended up as the default model for the integration pipeline.
 
-**Integration pipeline (Table 5.3-2):** every summarisation variant kept 100% of critical clauses (CSS = 1.0, RCR_critical = 1.0). Hybrid Blend gave the best practical trade-off, compressing contracts to around 12% of their original length while still holding onto full clause coverage.
+**Integration pipeline (Table 5.3-2):** every summarisation variant kept 100% of critical clauses (CSS = 1.0, RCR_critical = 1.0). Hybrid Blend gave the best practical trade-off, compressing contracts to around 12% of their original length while still holding onto full clause coverage. These perfect coverage scores were later traced to label leakage in the evaluation.
 
 Raw summary CSVs behind these tables are in [`pipeline_out/`](./pipeline_out/).
 
@@ -92,4 +90,4 @@ I built and ran these on Google Colab Pro with a single NVIDIA T4 GPU in High-RA
 
 If you're referencing this work, please cite the dissertation:
 
-> Shanmuga Sundaram, R.M. (2025). *LLM-based Summarisation and Clause Classification*. MSc Dissertation, University of Surrey. Supervised by Dr Alaa Marshan.
+> Shanmuga Sundaram, R.M. (2025). *LLM-Based Legal Document Summarisation and Multi-Label Classification*. MSc Dissertation, University of Surrey. Supervised by Dr Alaa Marshan.
