@@ -6,7 +6,7 @@ MSc Data Science dissertation project (University of Surrey, 2025–2026, Distin
 **Supervisor:** Dr Alaa Marshan, University of Surrey
 
 ## Status note
-Status note: This dissertation was developed into a co-authored manuscript with Dr. Alaa Marshan (under revision, 2026). A later audit of this pipeline found evaluation leakage; after it was corrected, the main conclusion reversed. The results below are the original dissertation results and are kept for the record. The corrected evaluation is in the manuscript, and a follow-up analysis of what the classifier relies on, with LIME re-run on the model’s real input, is in cuad-lime-shortcut.
+This dissertation was developed into a co-authored manuscript with Dr Alaa Marshan (under revision, 2026). A later audit of this pipeline found evaluation leakage; after it was corrected, the main conclusion reversed. The results below are the original dissertation results and are kept for the record. The corrected evaluation is in the manuscript, and a follow-up analysis of what the classifier relies on, with LIME re-run on the model’s real input, is in [cuad-lime-shortcut](https://github.com/meenaas/cuad-lime-shortcut).
 
 ## Before you run these
 
@@ -14,7 +14,7 @@ A few things worth knowing if you're planning to actually execute the notebooks,
 
 - **`Hybrid_Summarisation_Pipeline_1908.ipynb` pins `transformers==4.43.3`**, while the other two notebooks pin `4.42.4`. I ran these in separate Colab sessions and never reconciled the versions afterward. `requirements.txt` uses `4.42.4`, matching the classification and integration notebooks, so expect a version mismatch if you're running the summarisation notebook on its own.
 - **`Clause_Classification_Legal_Pro_Bert_Final.ipynb` has a cell partway through that runs an unpinned `pip install -U transformers datasets accelerate`.** This upgrades packages mid-notebook, past whatever was pinned earlier in the same file. If you're rerunning it end to end, consider skipping or pinning that cell.
-- **`Hybrid_Summarisation_Clause_Classification.ipynb` hardcodes a Google Drive path**: `BASE = "/content/drive/MyDrive/msc_dissertation"`. Update this to wherever you've placed `summaries_hybrid.csv`, `clause_to_idx.json`, and `legalpro_bert_clause_cls_best.pt` before running it, it won't find these files at that path on your own Drive.
+- **`Hybrid_Summarisation_Clause_Classification.ipynb` hardcodes a Google Drive path**: `BASE = "/content/drive/MyDrive/msc_dissertation"`. Update this to wherever you've placed `summaries_hybrid.csv`, `clause_to_idx.json`, and `legalpro_bert_clause_cls_best.pt` before running it; it won't find these files at that path on your own Drive.
 
   
 ## Repository structure
@@ -38,6 +38,9 @@ The pipeline (Figure 3.1-1 in the dissertation) has two stages that were built a
 Two things I tried and didn't end up using, as discussed in 3.2 of the dissertation:
 
 - **Legal-Longformer** (`alternatives_explored/LegalLongformer2208.ipynb`) as a clause classifier, for its longer context window (4,096 tokens). I didn't adopt it because CUAD clause spans mostly fit under 512 tokens anyway, and the extra training cost wasn't worth it for this dataset.
+
+  *In hindsight, this reasoning missed something: the classifier was trained on the first 512 tokens of each contract, not on the clause spans, so many clauses (every Governing Law clause in the test set, for example) were outside its input. That finding is what led to [cuad-lime-shortcut](https://github.com/meenaas/cuad-lime-shortcut).*
+  
 - A **supervised Longformer extractive ranker** (`alternatives_explored/extractive_summarisation_pipeline.ipynb`), tried as an alternative to TextRank. TextRank stayed in the final pipeline since it needs no training data and did just as well at this dataset size.
 
 Keeping these in for transparency, not because they're part of the reported results.
@@ -62,7 +65,7 @@ LegalPro-BERT + BCEWithLogitsLoss + AdamW ended up as the default model for the 
 
 Raw summary CSVs behind these tables are in [`pipeline_out/`](./pipeline_out/).
 
-*Note: the 0.72 micro-F1 above is a validation-set figure from this dissertation-stage pipeline and may differ from figures reported in later work.*
+*Note: 0.72 is a validation-set figure from the dissertation-stage pipeline. In the corrected, leak-free evaluation (LegalPro-BERT with BCEWithLogitsLoss and AdamW, on a held-out contract-level test split), micro-F1 is 0.608.*
 
 ## Data
 
