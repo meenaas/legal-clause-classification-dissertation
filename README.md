@@ -6,7 +6,7 @@ MSc Data Science dissertation project (University of Surrey, 2025–2026, Distin
 **Supervisor:** Dr Alaa Marshan, University of Surrey
 
 ## Status note
-Status: This dissertation was developed into a co-authored manuscript with Dr. Alaa Marshan (2026). A follow-up analysis of what the classifier relies on, with LIME explanations re-run on the model’s real input, is in cuad-lime-shortcut.
+Status note: This dissertation was developed into a co-authored manuscript with Dr. Alaa Marshan (under revision, 2026). A later audit of this pipeline found evaluation leakage; after it was corrected, the main conclusion reversed. The results below are the original dissertation results and are kept for the record. The corrected evaluation is in the manuscript, and a follow-up analysis of what the classifier relies on, with LIME re-run on the model’s real input, is in cuad-lime-shortcut.
 
 ## Before you run these
 
